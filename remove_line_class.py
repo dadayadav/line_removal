@@ -104,4 +104,4 @@ class remove_line:
     a = cv2.bitwise_and(a,final)
     backtorgb = cv2.cvtColor(a,cv2.COLOR_GRAY2RGB)
     self.show_wait_destroy(backtorgb)
-    return self.img, final, backtorgb
+    return self.img, final, backtorgb, bw
