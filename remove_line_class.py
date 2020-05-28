@@ -1,9 +1,8 @@
+import cv2 
+import numpy as np
+import matplotlib.pyplot as plt
 class remove_line:
   def __init__(self, img, image = True, image_path= False):
-    import cv2 
-    import cv2 as cv
-    import numpy as np
-    import matplotlib.pyplot as plt
     if type(img)==type(np.array([0])):
       image= True
       image_path = False
@@ -11,7 +10,7 @@ class remove_line:
       self.gray = cv2.cvtColor(self.img,cv2.COLOR_GRAY2RGB)
     else:
       try:
-        self.img = cv.imread(img, cv.IMREAD_COLOR)
+        self.img = cv2.imread(img, cv2.IMREAD_COLOR)
         self.gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
       except:
         print(f"No such file exist with name '{img}'")
@@ -28,26 +27,26 @@ class remove_line:
     plt.imshow(img)
    
   def detect_horizontal_lines(self, img):
-    img = cv.bitwise_not(img)
-    bw = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_MEAN_C,cv.THRESH_BINARY, 15, -2)
+    img = cv2.bitwise_not(img)
+    bw = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY, 15, -2)
     horizontal = np.copy(bw)
     cols = horizontal.shape[1]
     horizontal_size = cols // 30
-    horizontalStructure = cv.getStructuringElement(cv.MORPH_RECT, (horizontal_size, 1))
-    horizontal = cv.erode(horizontal, horizontalStructure)
-    horizontal = cv.dilate(horizontal, horizontalStructure)
+    horizontalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (horizontal_size, 1))
+    horizontal = cv2.erode(horizontal, horizontalStructure)
+    horizontal = cv2.dilate(horizontal, horizontalStructure)
     self.show_wait_destroy(horizontal)
     return bw, horizontal
   
   def detect_vertical_lines(self,img):
-    img = cv.bitwise_not(img)
-    bw = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_MEAN_C,cv.THRESH_BINARY, 15, -2)
+    img = cv2.bitwise_not(img)
+    bw = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY, 15, -2)
     vertical = np.copy(bw)
     rows = vertical.shape[0]
     verticalsize = rows // 30
-    verticalStructure = cv.getStructuringElement(cv.MORPH_RECT, (1, verticalsize))
-    vertical = cv.erode(vertical, verticalStructure)
-    vertical = cv.dilate(vertical, verticalStructure)
+    verticalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (1, verticalsize))
+    vertical = cv2.erode(vertical, verticalStructure)
+    vertical = cv2.dilate(vertical, verticalStructure)
     self.show_wait_destroy(vertical)
     return bw, vertical
   
@@ -56,8 +55,8 @@ class remove_line:
     bw, vertical = self.detect_vertical_lines(self.gray)
     img = np.copy(horizontal)
     vet = np.copy(vertical)
-    img = cv.bitwise_not(img)
-    vet = cv.bitwise_not(vet)
+    img = cv2.bitwise_not(img)
+    vet = cv2.bitwise_not(vet)
     edge = self.edges(img)
     edge_vet = self.edges(vet)
     lines = self.houghline(edge)
@@ -95,14 +94,14 @@ class remove_line:
       print("Vertical Line Removed")
     except:
       print("No vertical line detected")
-    vet = cv.bitwise_not(vet)
-    img = cv.bitwise_not(img)
+    vet = cv2.bitwise_not(vet)
+    img = cv2.bitwise_not(img)
     a = np.copy(bw)
     final = np.subtract(a, img)
     final = np.subtract(final,vet)
-    final = cv.bitwise_not(final)
+    final = cv2.bitwise_not(final)
     a = np.copy(self.gray)
-    a = cv.bitwise_and(a,final)
+    a = cv2.bitwise_and(a,final)
     backtorgb = cv2.cvtColor(a,cv2.COLOR_GRAY2RGB)
     self.show_wait_destroy(backtorgb)
     return self.img, final, backtorgb
